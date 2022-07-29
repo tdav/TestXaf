@@ -1,11 +1,9 @@
 ﻿using DevExpress.Persistent.Base;
-using DevExpress.Xpo;
 using System.ComponentModel;
 
 namespace TestXaf.Models
 {
     [DefaultClassOptions]
-    [Persistent("tbProduct")]
     [DefaultProperty(nameof(Name))]
     public class tbProduct
     {
