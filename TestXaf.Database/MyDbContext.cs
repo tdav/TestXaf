@@ -5,26 +5,25 @@ using DevExpress.Persistent.BaseImpl.EF;
 using DevExpress.Persistent.BaseImpl.EF.PermissionPolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using System;
+using System.Reflection;
+using TestXaf.Models;
 
-namespace TestXaf.Module.BusinessObjects
+namespace TestXaf.Database
 {
-
-    // This code allows our Model Editor to get relevant EF Core metadata at design time.
-    // For details, please refer to https://supportcenter.devexpress.com/ticket/details/t933891.
     public class TestXafContextInitializer : DbContextTypesInfoInitializerBase
     {
         protected override DbContext CreateDbContext()
         {
-            var optionsBuilder = new DbContextOptionsBuilder<TestXafEFCoreDbContext>()
-                .UseSqlServer(@";");
-            return new TestXafEFCoreDbContext(optionsBuilder.Options);
+            var optionsBuilder = new DbContextOptionsBuilder<MyDbContext>().UseSqlite("Filename=TestDatabase.db");
+            return new MyDbContext(optionsBuilder.Options);
         }
     }
 
-    //This factory creates DbContext for design-time services. For example, it is required for database migration.
-    public class TestXafDesignTimeDbContextFactory : IDesignTimeDbContextFactory<TestXafEFCoreDbContext>
+
+    public class TestXafDesignTimeDbContextFactory : IDesignTimeDbContextFactory<MyDbContext>
     {
-        public TestXafEFCoreDbContext CreateDbContext(string[] args)
+        public MyDbContext CreateDbContext(string[] args)
         {
             throw new InvalidOperationException("Make sure that the database connection string and connection provider are correct. After that, uncomment the code below and remove this exception.");
             //var optionsBuilder = new DbContextOptionsBuilder<TestXafEFCoreDbContext>();
@@ -33,31 +32,43 @@ namespace TestXaf.Module.BusinessObjects
         }
     }
 
+
     [TypesInfoInitializer(typeof(TestXafContextInitializer))]
-    public class TestXafEFCoreDbContext : DbContext
+    public partial class MyDbContext : DbContext
     {
-        public TestXafEFCoreDbContext(DbContextOptions<TestXafEFCoreDbContext> options) : base(options)
-        {
-        }
+        public DbSet<spClass> spClasses { get; set; }
+        public DbSet<tbProduct> tbProducts { get; set; }
 
         public DbSet<ModuleInfo> ModulesInfo { get; set; }
         public DbSet<ModelDifference> ModelDifferences { get; set; }
         public DbSet<ModelDifferenceAspect> ModelDifferenceAspects { get; set; }
         public DbSet<PermissionPolicyRole> Roles { get; set; }
-        public DbSet<TestXaf.Module.BusinessObjects.ApplicationUser> Users { get; set; }
-        public DbSet<TestXaf.Module.BusinessObjects.ApplicationUserLoginInfo> UserLoginInfos { get; set; }
+        public DbSet<ApplicationUser> Users { get; set; }
+        public DbSet<ApplicationUserLoginInfo> UserLoginInfos { get; set; }
         public DbSet<FileData> FileData { get; set; }
         public DbSet<ReportDataV2> ReportDataV2 { get; set; }
         public DbSet<DashboardData> DashboardData { get; set; }
 
+        public MyDbContext(DbContextOptions options) : base(options) { }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TestXaf.Module.BusinessObjects.ApplicationUserLoginInfo>(b =>
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ApplicationUserLoginInfo>(b =>
             {
                 b.HasIndex(nameof(DevExpress.ExpressApp.Security.ISecurityUserLoginInfo.LoginProviderName), nameof(DevExpress.ExpressApp.Security.ISecurityUserLoginInfo.ProviderUserKey)).IsUnique();
             });
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            options.UseSqlite("Filename=TestDatabase.db", options =>
+            {
+                options.MigrationsAssembly(Assembly.GetExecutingAssembly().FullName);
+            });
 
+            base.OnConfiguring(options);
+        }
     }
 }

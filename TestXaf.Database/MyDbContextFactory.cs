@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace TestXa.Database
+namespace TestXaf.Database
 {
     public class MyUsersDbContextFactory : IDesignTimeDbContextFactory<MyDbContext>
     {
