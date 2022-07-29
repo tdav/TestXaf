@@ -11,6 +11,15 @@ public class TestXafBlazorApplication : BlazorApplication
         CheckCompatibilityType = DevExpress.ExpressApp.CheckCompatibilityType.DatabaseSchema;
         DatabaseVersionMismatch += TestXafBlazorApplication_DatabaseVersionMismatch;
     }
+
+    //protected override void CreateDefaultObjectSpaceProvider(CreateCustomObjectSpaceProviderEventArgs args)
+    //{
+    //    //IDbContextFactory<MyDbContext> dbFactory = ServiceProvider.GetService<IDbContextFactory<MyDbContext>>();
+    //    //EFCoreObjectSpaceProvider efCoreObjectSpaceProvider = new EFCoreObjectSpaceProvider(dbFactory, TypesInfo);
+    //    //args.ObjectSpaceProviders.Add(efCoreObjectSpaceProvider);
+    //    // ...
+    //}
+
     protected override void OnSetupStarted()
     {
         base.OnSetupStarted();
@@ -21,6 +30,7 @@ public class TestXafBlazorApplication : BlazorApplication
         }
 #endif
     }
+
     private void TestXafBlazorApplication_DatabaseVersionMismatch(object sender, DatabaseVersionMismatchEventArgs e)
     {
 #if EASYTEST

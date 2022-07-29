@@ -73,7 +73,7 @@ public class Startup
                     }
 #endif
                     ArgumentNullException.ThrowIfNull(connectionString);
-                    options.UseSqlServer(connectionString);
+                    options.UseSqlite("Filename=TestDatabase.db");
                     options.UseLazyLoadingProxies();
                 })
                 .AddNonPersistent();
